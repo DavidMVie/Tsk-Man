@@ -1,0 +1,17 @@
+      <form class="create-new-task">
+        <h2> Add New Task </h2>
+        <ul class="fa ul"></ul> {{!-- inject errors or success message --}}
+        <div>
+          <label for="description">Description</label>
+          <input type="text" id="description" name="description" required>
+        </div>
+        <div>
+          <label for="dueDate">Due Date</label>
+          <input type="date" id="dueDate" name="dueDate">
+        </div>
+        <label for="notes">Notes</label>
+        <textarea id="notes" name="notes"></textarea>
+        <div>
+          <button class="btn-yell">Add Task</button>
+        </div>
+      </form>

@@ -1,0 +1,17 @@
+
+        {{#if user.avatar}}
+          <img src="{{user.avatar}}" alt="{{user.username}}">
+        {{else}}
+          <i class="fas fa-user-circle tool-tip">
+            <span class="tool-tip-box point-up">User Options</span>
+          </i>
+        {{/if}}
+          <i class="fas fa-calendar-plus tool-tip" id="openAddTaskModal">
+            <span class="tool-tip-box point-right" >Add New Task</span>
+          </i>
+          <i class="fas fa-clipboard tool-tip">
+            <span class="tool-tip-box point-down">Task Organizer</span>
+          </i>
+          <i class="fas fa-trash-alt tool-tip" id="wipeTasks">
+            <span class="tool-tip-box point-down">Delete All Tasks!</span>
+          </i>

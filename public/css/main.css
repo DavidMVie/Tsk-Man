@@ -1,0 +1,409 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#dbdbdb+0,737b7e+100 */
+background: #dbdbdb; /* Old browsers */
+background: -moz-radial-gradient(center, ellipse cover,  #dbdbdb 0%, #737b7e 100%); /* FF3.6-15 */
+background: -webkit-radial-gradient(center, ellipse cover,  #dbdbdb 0%,#737b7e 100%); /* Chrome10-25,Safari5.1-6 */
+background: radial-gradient(ellipse at center,  #dbdbdb 0%,#737b7e 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dbdbdb', endColorstr='#737b7e',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+min-height: 100vh;
+font-family: 'Open Sans', san-serif;
+padding: 0; margin: 0;
+display: flex;
+flex-direction: column;
+color: rgb(53, 53, 53);
+font-size: 1em;
+}
+
+p.no-tasks {
+  text-align: center;
+}
+
+h1, h2, h3 {
+  font-family: 'Raleway', sans-serif;
+}
+
+h1 {
+  font-size: 1.5em;
+}
+
+h2{
+  font-size: 1.8em;
+}
+
+h3 {
+  font-size: 1.4em
+}
+
+span, div, li {
+  font-size: .92em;
+}
+
+a, p {
+  font-size: 1.1em
+}
+
+
+label, input, textarea{
+  font-size: 1.2em;
+  font-family: inherit;
+}
+
+p.tiny-text, label.tiny-text, input.tiny-text, textarea.tiny-text, li.tiny-text, a.tiny-text, span.tiny-text, div.tiny-text{
+  font-size: .7em
+}
+
+i.fas {
+  font-size: 1.7em !important
+}
+
+header i.fas {
+  font-size: 1.2em !important;
+}
+
+
+/*
+  BUTTONS
+*/
+
+.btn-yell {
+  padding: 8px 25px;
+  border: 0;
+  outline: none;
+  border-radius: 5px;
+  font-family: inherit;
+  background: #F6E767;
+  border: 1px solid rgb(146, 146, 146);
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.btn-yell:hover {
+  background: rgb(255, 231, 18);
+}
+
+.btn-yell:active {
+  box-shadow: inset 0 0 3px rgba(0,0,0, .5);
+}
+
+/*Univerisal Page wrapper - controls width of page and centers */
+.main-wrapper {
+  width: 90vw;
+  margin: 0 auto;
+}
+
+/* Page Header and Footer */
+header, footer {
+  background: #2C2E31;
+  padding: 10px 0;
+  margin: 0;
+  color: rgb(202, 202, 202);
+}
+
+header .main-wrapper {
+  display: flex;
+  justify-content: space-between;
+}
+
+header .main-wrapper h1 {
+  position: relative;
+  color: #F6E767;
+  font-weight: 100;
+  padding: 0;
+  margin: 0;
+}
+
+header .main-wrapper h1 i {
+  color: rgb(36, 36, 36);
+  position: absolute;
+  left: 105%
+
+}
+
+
+
+header .main-wrapper nav {
+  display: flex;
+  align-items: center;
+  background: red;
+}
+
+header .main-wrapper nav li {
+  list-style: none;
+}
+
+header .main-wrapper nav li a {
+  color: inherit;
+  text-decoration: none;
+  padding: 10px 10px;
+  font-weight: 100;
+  font-family: 'Raleway';
+}
+
+header .main-wrapper nav li:last-child a {
+  border-left: 1px solid rgb(68, 68, 68);
+}
+
+header .main-wrapper nav li a:active {
+  box-shadow: inset 5px 5px 12px rgba(0,0,0)
+}
+
+header .main-wrapper nav li a:hover {
+  color: white;
+}
+
+header .main-wrapper nav li a.selected {
+  background:rgb(29, 29, 29);
+  color: white;
+}
+
+/* Sticky Footer */
+main {
+  flex-grow: 1
+}
+
+/* Create Account / Sign In Card */
+.form-card {
+  background: #E1E5E6;
+  margin: 60px auto 60px;
+  border: 3px solid rgb(152, 156, 156);
+  border-radius: 10px;
+  box-shadow: 0px 0px 100px  rgb(212, 212, 212);
+}
+
+.form-card .form-tabs {
+  background: #2C2E31;
+  display: flex; 
+  justify-content: space-around;
+  color: rgb(189, 188, 188);
+  border-radius: 8px 8px 0 0
+}
+
+.form-card .form-tabs p {
+  width: 45%;
+  text-align: center;
+  border: 1px solid rgb(168, 168, 168);
+  padding: 8px 5px;
+  margin: 10px 0;
+  border-radius: 5px;
+  text-transform: uppercase;
+}
+
+.form-card .form-tabs p.selected {
+  background: #F6E767;
+  color: black;
+}
+
+.form-card .form-tabs p:not(.selected):hover {
+  color: white;
+  border: 1px solid white;
+  cursor: pointer
+}
+
+.form-card .form-tabs p:not(.selected):active {
+  box-shadow: inset 1px 1px 12px rgba(0,0,0,1);
+}
+
+.form-card h1 {
+  text-align: center;
+}
+
+
+.form-card .form-type-wrapper,
+ul.errors-list {
+  width:80%;
+  margin: 0 auto;
+}
+
+
+ul.errors-list {
+  list-style: none
+}
+
+ul.errors-list li::before {
+  content: "\2022";  /* Add content: \2022 is the CSS Code/unicode for a bullet */
+  color: red; /* Change the color */
+  font-weight: bold; /* If you want it to be bold */
+  display: inline-block; /* Needed to add space between the bullet and the text */
+  width: 1em; /* Also needed for space (tweak if needed) */
+  margin-left: -1em; /* Also needed for space (tweak if needed) */
+}
+
+.input-wrapper {
+    width: 80%;
+    margin: 15px auto;
+  
+}
+
+.input-wrapper  input {
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  height: 30px;
+  text-indent: 3px;
+}
+
+.form-card .btn-yell {
+  margin: 20px 0
+}
+
+
+/* Add New Task Form */
+
+#modalContent form.create-new-task {
+  max-width: 300px;
+  margin: 0 auto;
+}
+#modalContent form.create-new-task h2{
+  padding: 0;
+  margin-top: 15px;
+  text-align: center;
+}
+
+#modalContent form.create-new-task div:not(:first-child) {
+  margin-top: 25px;
+}
+
+#modalContent form.create-new-task label {
+  display: inline-block;
+  width: 35%;
+  text-align: right;
+}
+
+#modalContent form.create-new-task input {
+  height: 30px;
+  font-family: inherit;
+}
+
+#modalContent form.create-new-task input {
+  width: 63%;
+  text-align: left;
+  text-indent: 3px;
+
+}
+
+#modalContent form.create-new-task label[for="notes"]  {
+  text-align: center;
+  display: block;
+  width: 100%;
+  margin-top: 20px;
+  margin-bottom: 5px
+}
+
+#modalContent form.create-new-task textarea {
+  min-height:70px;
+  width: 100%;
+
+}
+
+#modalContent form.create-new-task div:last-child {
+  text-align: center;
+  margin-bottom: 20px
+}
+
+.task-success {
+  color: white;
+  font-size: 1.5em;
+  padding: 10px;
+  border-radius: 2px;
+  font-family: 'Open Sans', sans-serif;
+  text-align: center;
+  background: rgb(111, 165, 41); 
+  border: 1px solid rgb(10, 83, 20);
+  font-weight: 300;
+
+}
+
+/* Task Tool Bar above the tasks,  holds icons for addig new tasks deleting all or organising existing tasks.*/
+
+div#task-tool-bar {
+  display: flex;
+  margin: 15px auto;
+  justify-content: flex-start;
+  border: 1px solid rgba(182, 181, 181, .3);
+  box-shadow: 0 0 130px rgba(221, 216, 216, 0.2);
+  padding: 10px;
+  border-radius: 10px;
+}
+
+div#task-tool-bar i {
+  color: #F6E767;
+  cursor: pointer;
+}
+
+div#task-tool-bar i.fa-trash-alt,
+div#task-tool-bar i.fa-clipboard {
+  margin-left: 20px;
+}
+
+div#task-tool-bar i:first-child {
+  margin-right: auto;
+}
+
+
+/* THE TASK LIST 
+=================== */
+
+section.task-list-wrapper {
+  background: #F0F5F5;
+  padding: 20px 0;
+  border-radius: 15px;
+  min-height: 300px;  
+  margin-bottom: 50px
+}
+
+ul.task-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  padding: 0;
+  width: 90%; 
+
+
+}
+
+ul.task-list li.task-list-item {
+  box-shadow: 1px 1px 15px rgba(0,0,0,.3);
+  border-radius: 5px;
+  min-height: 40px;
+  padding: 5px 8px;
+  list-style: none;
+  border-left: 5px solid #EDE170;
+  cursor: pointer;
+}
+
+ul.task-list li.task-list-item:not(:first-child) {
+  margin-top: 10px
+}
+
+ul.task-list li.task-list-item .task-desc {
+  padding: 5px;
+}
+
+.change-due-date {
+  color: dodgerBlue;
+
+}
+
+.change-due-date:hover {
+  color: rgb(14, 82, 150);
+  text-decoration: underline;
+}
+
+.change-due-date .fas.fa-check,
+.change-due-date .fas.fa-times {
+
+}
+
+.change-due-date .fas.fa-check {
+  color: rgb(48, 185, 48);
+
+}
+
+.change-due-date .fas.fa-times {
+  color: rgb(253, 80, 0);
+
+}

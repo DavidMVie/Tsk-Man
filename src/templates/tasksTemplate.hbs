@@ -1,0 +1,25 @@
+      {{!-- <a href="#" id="signOut">Sign Out</a> --}}
+      <div id="task-tool-bar"></div>
+      <section class="task-list-wrapper">
+        {{#if this.tasks}}
+        <ul class="task-list">
+          {{#each this.tasks}}
+          <li class="task-list-item" data-id="{{_id}}">
+            <div class="task-desc" contenteditable="true">
+              {{description}}
+            </div>
+            <div class="task-lower-half tiny-text">
+              <span class="due-date">
+                {{dueDate}}
+              </span>
+              <span class="change-due-date">(Change)</span>
+            </div>
+            <label><input type="checkbox"> completed</label>
+            <a href="#" class="delete-task">delete task</a>
+          </li>
+          {{/each}}
+        {{else}}
+          <p class="no-tasks">You don't have any Tasks yet!</p>
+        {{/if}}
+        </ul>
+      </section>
