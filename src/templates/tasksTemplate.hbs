@@ -1,21 +1,52 @@
       {{!-- <a href="#" id="signOut">Sign Out</a> --}}
       <div id="task-tool-bar"></div>
       <section class="task-list-wrapper">
+        <div class="select-filters">
+          Showing <select class="select-css" name="showStatus" id="showStatus">
+            <option value="Incomplete">Incomplete</option>
+            <option value="Completed">Completed</option>
+            <option value="All">All</option>            
+            </select>
+        </div>
+        <div class="links-bar">
+          <span>Results: {{"4"}}</span>
+          <ul>Pages: {{"4"}} </ul>
+        </div>
         {{#if this.tasks}}
         <ul class="task-list">
           {{#each this.tasks}}
           <li class="task-list-item" data-id="{{_id}}">
-            <div class="task-desc" contenteditable="true">
+            <div class="task-col-1">     
+              <label for="markComplete" class="tool-tip">
+                <input type="checkbox" id="markComplete">
+                <span class="tool-tip-box point-down">Mark Complete</span>
+              </label>
+              <i class="fas fa-sticky-note tool-tip">
+                <span class="edit-notes tool-tip-box point-up">Edit Notes</span>
+              </i>
+            </div>
+            <div class="task-col-2">
+              <div class="task-desc" contenteditable="true">
               {{description}}
+              </div>
+              <div class="task-lower-half tiny-text">
+                <span class="due-date">
+                  {{#if dueDate}}
+                    Due: {{formatDate dueDate 'dueDate'}}
+                    <span> <strong> ({{formatDate dueDate 'timeTo'}}) </strong></span>                   
+                  {{else}}
+                    No due date set..
+                  {{/if}}
+                  <a href="#" class="change-due-date">(Change)</a>
+                </span>
+
+              </div>
             </div>
-            <div class="task-lower-half tiny-text">
-              <span class="due-date">
-                {{dueDate}}
-              </span>
-              <span class="change-due-date">(Change)</span>
+            <div class="task-col-3">
+              <i class="fas fa-trash-alt tool-tip">
+                <span class="tool-tip-box point-down delete-task">Delete Task</span>
+              </i>            
             </div>
-            <label><input type="checkbox"> completed</label>
-            <a href="#" class="delete-task">delete task</a>
           </li>
           {{/each}}
         {{else}}

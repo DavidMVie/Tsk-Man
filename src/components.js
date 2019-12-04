@@ -4,8 +4,10 @@ const signUpTemplate = require('./templates/signUpTemplate.hbs');
 const tasksTemplate = require('./templates/tasksTemplate.hbs');
 const addTaskTemplate = require('./templates/addTaskTemplate.hbs');
 const taskBarTemplate = require('./templates/taskBarTemplate.hbs');
+const wipeOutTemplate  = require('./templates/wipeOutTemplate.hbs')
 
 // Utility Functions 
+let moment = require('moment');
 import { serverComm, displayErrorOutput, validateForm, modal, centerEl, toggleCustomToolTip } from './funk';
 
 // On Page Load decided which view template should be rendered.
@@ -222,21 +224,33 @@ const tasksComponent = (user) => {
   ======================= */
   document.querySelector('#wipeTasks').addEventListener('click', (e) => {
     e.preventDefault();
-    user.tasks = [];
-    serverComm('/tasks/all', 'DELETE')
-     .then((response) => {
-       if(response.status === 200) {
-         return response.json()
-       }
-       throw new Error('An error occurred, please try again later.')
-     })
-     .then((msg) => {
-       console.log(msg)
-       tasksComponent(user);  // Re-render the empty tasks component 
-     })
-     .catch((e) => {
-       console.log(e.message);
-     })
+    modal({y: 10})
+    document.getElementById('modalContent').innerHTML = wipeOutTemplate();
+
+    document.querySelector('.delete-all').addEventListener('click', (e) => {
+      e.preventDefault();
+      console.log(document.querySelector('#wipeout').value)
+      if(document.querySelector('#wipeout').value === 'wipeout' ) {
+        user.tasks = [];
+        serverComm('/tasks/all', 'DELETE')
+         .then((response) => {
+           if(response.status === 200) {
+             return response.json()
+           }
+           throw new Error('An error occurred, please try again later.')
+         })
+         .then((msg) => {
+           console.log(msg)
+           document.querySelector('#modal').remove();
+           document.querySelector('#overlay').remove();
+           tasksComponent(user);  // Re-render the empty tasks component 
+         })
+         .catch((e) => {
+           console.log(e.message);
+         })
+      }
+    })
+
   })
 
 } // End of TaskComponent 

@@ -51,13 +51,9 @@
     const widthOfEl = parseInt(style.width);
     const heightOfEl = parseInt(style.height);
 
-    console.log('heightOfPage ', heightOfPage)
-    console.log('heightofEl ', heightOfEl)
-
     // Need to add on the page scrolling 
     var scrollTop = window.pageYOffset || (document.documentElement || document.body.parentNode || document.body).scrollTop
 
-    console.log('Scroll Top ', scrollTop)
     // Center point x
     if(offsetObj) {
       if(!offsetObj.x) {
@@ -71,7 +67,6 @@
         el.style.top = ((heightOfPage - heightOfEl) / 2) + scrollTop + 'px';
       }else {
         el.style.top = (((heightOfPage - heightOfEl)) / 2) + offsetObj.y + scrollTop + 'px';
-        console.log(el.style.top)
       }
     }else {
       el.style.left = ((widthOfPage - widthOfEl) / 2) + 'px';

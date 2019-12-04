@@ -57,11 +57,11 @@ p.tiny-text, label.tiny-text, input.tiny-text, textarea.tiny-text, li.tiny-text,
 }
 
 i.fas {
-  font-size: 1.7em !important
+  font-size: 1.7em;
 }
 
 header i.fas {
-  font-size: 1.2em !important;
+  font-size: 1.2em;
 }
 
 
@@ -165,7 +165,8 @@ main {
   flex-grow: 1
 }
 
-/* Create Account / Sign In Card */
+/* Create Account / Sign In Card 
+================================== */
 .form-card {
   background: #E1E5E6;
   margin: 60px auto 60px;
@@ -251,8 +252,8 @@ ul.errors-list li::before {
 }
 
 
-/* Add New Task Form */
-
+/* Add New Task Form 
+====================== */
 #modalContent form.create-new-task {
   max-width: 300px;
   margin: 0 auto;
@@ -339,13 +340,17 @@ div#task-tool-bar i.fa-clipboard {
   margin-left: 20px;
 }
 
-div#task-tool-bar i:first-child {
+div#task-tool-bar i.fa-user-circle {
   margin-right: auto;
 }
 
+div#task-tool-bar i.fa-user-circle span.point-up{
+  bottom: -150%;
+}
 
-/* THE TASK LIST 
-=================== */
+/* THE TASK LIST  list-item
+============================= */
+
 
 section.task-list-wrapper {
   background: #F0F5F5;
@@ -372,12 +377,85 @@ ul.task-list li.task-list-item {
   padding: 5px 8px;
   list-style: none;
   border-left: 5px solid #EDE170;
-  cursor: pointer;
+  display: flex;
+  position: relative;
 }
 
 ul.task-list li.task-list-item:not(:first-child) {
   margin-top: 10px
 }
+
+div.task-col-1 {
+  border-right: 1px solid rgb(223, 223, 223);
+}
+
+div.task-col-1 {
+  font-size: .6em;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+div.task-col-1 input[type="checkbox"] {
+  height:14px;
+  width: 14px;
+  position: absolute;
+  left: -8px;
+  top: 1px
+}
+
+div.task-col-1 input#markComplete ~ span.tool-tip-box.point-down {
+  font-size: 1em;
+}
+
+div.task-col-1 i.fas.fa-sticky-note { 
+  color: #737b7e;
+  position: relative;
+  left: -4px;
+  cursor: pointer;
+}
+
+
+.edit-notes.tool-tip-box.point-up{
+  font-size: .8em;
+  bottom: -250%;
+}
+
+div.task-col-2 {
+  flex-grow: 2;
+  padding: 0 10px
+}
+
+div.task-col-2 .task-desc {
+  font-weight: bold;
+  padding: 5px 0;
+  /* border:1px solid blue */
+}
+
+div.task-col-2 .task-lower-half {
+  /* border: 1px solid yellow; */
+  padding: 5px 0;
+}
+
+div.task-col-3 {
+  display: flex;
+  align-items: center;
+  font-size: .6em;
+  color: rgb(116, 116, 116);
+}
+
+div.task-col-3 i {
+  cursor: pointer;
+}
+
+span.delete-task {
+  font-size: .7em !important;
+}
+
+
+
+
+/* 
 
 ul.task-list li.task-list-item .task-desc {
   padding: 5px;
@@ -406,4 +484,106 @@ ul.task-list li.task-list-item .task-desc {
 .change-due-date .fas.fa-times {
   color: rgb(253, 80, 0);
 
-}
+} */
+
+
+/* ==== FILTERING, SORTING, PAGINATION OF THE UL ==== 
+   ================================================== */
+
+   div.select-filters {
+    text-align: center;
+  }
+  
+  div.links-bar {
+    text-align: center;
+    width: 90%;
+    margin: 15px auto 10px;
+    display: flex;
+    justify-content: space-between;
+    /* rgba(136, 71, 71, 0.2) */
+    /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#884747+0,ffffff+100 */
+    background: rgba(255, 255, 255, 1); /* Old browsers */
+    background: -moz-linear-gradient(left,  #F7F6F5 0%, #ffffff 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(left,  #F7F6F5 0%,#ffffff 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to right,  rgb(235, 235, 235) 0%,#ffffff 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#F7F6F5', endColorstr='#ffffff',GradientType=1 ); /* IE6-9 */
+    align-items: center;
+    box-shadow: 0px 1px 5px rgba(0,0,0, .1);
+    padding: 0px 10px;
+    border-radius: 10px;
+  }
+  
+  div.links-bar ul {
+    display: flex;
+    margin: 5px
+  }
+  
+  div.links-bar ul li {
+    padding: 2px 4px;
+    /* background: #65297A; */
+    border: 1px solid rgb(206, 206, 205);
+    border-radius: 2px;
+    color: rgb(54, 54, 54);
+    list-style: none;
+    margin-left: 5px;
+    cursor: pointer;
+
+  }
+  
+  div.links-bar ul li.current {
+    color: #FFF;
+    box-shadow: inset 1px 1px 10px rgba(0,0,0, .8);  
+    background:#F3E569
+  }
+  
+  div.links-bar ul li:active {
+    background: #F3E569;
+    box-shadow: inset 2px 2px 6px rgba(0,0,0, .8);
+
+  }
+  
+
+
+
+
+   /* svg image for custom select button */
+   .select-css {
+    font-size: 12px;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 700;
+    color: inherit;
+    line-height: 1.4;
+    padding: .6em 1.4em .5em .8em;
+    margin: 0;
+    border: 1px solid #aaa;
+    box-shadow: 0 1px 0 1px rgba(0,0,0,.04);
+    border-radius: .5em;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: #FFF;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'),
+      linear-gradient(to bottom, #F6E767 0%,#DAD380 100%);
+    background-repeat: no-repeat, repeat;
+    background-position: right .7em top 50%, 0 0;
+    background-size: .65em auto, 100%;
+  }
+
+  .select-css::-ms-expand {
+    display: none;
+  }
+
+  .select-css:hover {
+    border-color: #888;
+  }
+
+  .select-css:focus {
+    border-color: #aaa;
+    box-shadow: 0 0 1px 1px rgba(59, 153, 252, .7);
+    box-shadow: 0 0 0 1px -moz-mac-focusring;
+    color: rgba(59, 153, 252, 1);
+    outline: none;
+  }
+  .select-css option {
+    font-weight:normal;
+  }

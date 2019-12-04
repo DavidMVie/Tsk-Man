@@ -93,12 +93,11 @@ body {
 /* TOOL TIP POINTING UP */
 
 .tool-tip .tool-tip-box.point-up {
-  bottom: -130%;
   left: 40%;
   margin-left: -50px;
 }
 .tool-tip .tool-tip-box.point-up::after {
-  top: -39%;
+  top: -37%;
   left: 58%;
   border-color: transparent transparent #555 transparent;
 }
