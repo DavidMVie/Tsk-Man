@@ -416,8 +416,8 @@ div.task-col-1 i.fas.fa-sticky-note {
 }
 
 
-.edit-notes.tool-tip-box.point-up{
-  font-size: .8em;
+i.edit-notes .tool-tip-box.point-up{
+  font-size: .7em;
   bottom: -250%;
 }
 
@@ -494,7 +494,7 @@ ul.task-list li.task-list-item .task-desc {
     text-align: center;
   }
   
-  div.links-bar {
+  div#links-bar {
     text-align: center;
     width: 90%;
     margin: 15px auto 10px;
@@ -513,12 +513,12 @@ ul.task-list li.task-list-item .task-desc {
     border-radius: 10px;
   }
   
-  div.links-bar ul {
+  div#links-bar ul {
     display: flex;
     margin: 5px
   }
   
-  div.links-bar ul li {
+  div#links-bar ul li {
     padding: 2px 4px;
     /* background: #65297A; */
     border: 1px solid rgb(206, 206, 205);
@@ -530,13 +530,13 @@ ul.task-list li.task-list-item .task-desc {
 
   }
   
-  div.links-bar ul li.current {
+  div#links-bar ul li.current {
     color: #FFF;
     box-shadow: inset 1px 1px 10px rgba(0,0,0, .8);  
     background:#F3E569
   }
   
-  div.links-bar ul li:active {
+  div#links-bar ul li:active {
     background: #F3E569;
     box-shadow: inset 2px 2px 6px rgba(0,0,0, .8);
 

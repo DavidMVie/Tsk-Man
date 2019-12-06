@@ -5,6 +5,7 @@ const tasksTemplate = require('./templates/tasksTemplate.hbs');
 const addTaskTemplate = require('./templates/addTaskTemplate.hbs');
 const taskBarTemplate = require('./templates/taskBarTemplate.hbs');
 const wipeOutTemplate  = require('./templates/wipeOutTemplate.hbs')
+const paginationTemplate = require('./templates/paginationTemplate.hbs')
 
 // Utility Functions 
 let moment = require('moment');
@@ -128,22 +129,46 @@ const signUpComponent = () => {
 ====================================  */
 const tasksComponent = (user) => {
 
-  content.innerHTML = tasksTemplate(user);
+  // Hard coded for now - this should be from db and attached to userObj returned on initial session start
+  const userPreferences = {  
+    tasksPerPage: 8
+  }
+  user.preferences = userPreferences;  // for now set this manually onthe userObj 
 
-  /* Insert the Task Toolbar */ 
-  document.querySelector('#task-tool-bar').innerHTML = taskBarTemplate(user)
 
-  /* EVENT FOR USER CLICKING AVATAR ICON */
+  // Dealing with pagination numbers to dislay, defaults to page 1 on initial page load
+  if(!user.onPage) {
+    user.onPage = 1;
+  }
+
+  user.tasks4Page = getPageTasks(user); // paginate, get the tasks for page the user wants 
+
+  content.innerHTML = tasksTemplate(user);  // Render the view with userObject as context
+
+  console.log(user)
+
+  /* INSERT & MANAGE THE TASK TOOLBAR
+  ====================================    
+  ==================================== */ 
+  document.querySelector('#task-tool-bar').innerHTML = taskBarTemplate(user)  // REFACTOR - needs to be outwith task component so it's not reloaded every time a task is modified - only task list needs re-rendered then.
+
+  /* Task ToolBar Events 
+  ======================= */
+
+  /* Onclick of Avatar Icon
+  ======================================= */
   document.querySelector('#task-tool-bar .fa-user-circle').onclick = () => {
     toggleCustomToolTip(document.querySelector('#task-tool-bar .fa-user-circle'), 'userMenu', 'left')
   };
 
-  /* Add A Task Event Listener - ( Opens Add Task Modal )
-  ======================================================== */
+
+  /* Onclick of Add Task Modal
+  ============================= */
   document.querySelector('#openAddTaskModal').addEventListener('click', (e) => {
    modal()
    document.querySelector('#modalContent').innerHTML = addTaskTemplate();
-   centerEl(document.querySelector('#modal'),{y:-80})
+   const newTaskUL = document.querySelector('.create-new-task ul')
+   centerEl(document.querySelector('#modal'),{y: -10})
    // When the Add Task modal form is submitted
    document.querySelector('.create-new-task').addEventListener('submit', (e) => {
      e.preventDefault();
@@ -162,17 +187,19 @@ const tasksComponent = (user) => {
      })
       .then((task) => {
         user.tasks.push(task);
-        document.querySelector('.create-new-task ul').innerHTML = '<li class="task-success">New Task Added!</li>';
+        newTaskUL.innerHTML = '<li class="task-success">New Task Added!</li>';
         setTimeout(function() {
-          document.querySelector('.create-new-task ul').innerHTML = '';
-        }, 2000)
+          if(newTaskUL){
+            newTaskUL.innerHTML = '';
+          }
+        }, 1000)
         e.target.elements.description.value = '';
         e.target.elements.dueDate.value = '';
         e.target.elements.notes.value = '';
         tasksComponent(user)        
       })
       .catch((e) => {
-        document.querySelector('.create-new-task ul').innerHTML = `<li>${e.message}</li>`
+        newTaskUL.innerHTML = `<li>${e.message}</li>`
       })
    })
   })
@@ -189,39 +216,8 @@ const tasksComponent = (user) => {
   }
 
 
-  /* DELETE A TASK 
-  ================== */
-  const deleteTaskListeners = document.querySelectorAll('.delete-task')
-  
-  deleteTaskListeners.forEach((listener) => {
-    listener.addEventListener('click', (e) => {
-      e.preventDefault();
-      const taskId = e.target.closest(".task-list-item").dataset.id;
-      deleteTask(taskId)
-        .then((response) => {
-          if(response.status === 200) {
-            tasksComponent(user) // rerender the component to refresh list 
-          }else {
-            throw new Error('Unable to delete task :(')
-          }
-        })
-        .catch((e) => {
-          console.log(e.message)
-        })
-    });
-  })
-
-  const deleteTask = (id) => {
-    user.tasks = user.tasks.filter((task) => {
-      return task._id != id
-    })
-    console.log('foreach tasks new tasks list ', user.tasks)
-    return serverComm(`/tasks/${id}`, 'DELETE');    
-  }
-
-
-  /* Wipe Out All Tasks
-  ======================= */
+  /* Onclick Of Wipeout All Tasks
+  ================================ */
   document.querySelector('#wipeTasks').addEventListener('click', (e) => {
     e.preventDefault();
     modal({y: 10})
@@ -253,7 +249,83 @@ const tasksComponent = (user) => {
 
   })
 
+
+
+  /* INSERT PAGINATION BAR 
+  =========================
+  ========================= */
+    document.querySelector('#links-bar').innerHTML = paginationTemplate(user);
+    
+    const pageLinks = document.querySelectorAll('.paginate-li');
+    pageLinks[0].classList.add('current')
+    pageLinks.forEach((link, index) => {
+      link.addEventListener('click', (e) => {
+        user.onPage = index + 1; // +1 to offset zero based array
+        user.tasks4Page = getPageTasks(user);  // returns the tasks that should be displayed for the requested page
+
+        const current = document.querySelector('.current') || null;  // Avoids a Reference error
+
+        if(current) {
+          current.classList.remove('current');   
+        }
+        link.classList.add('current');
+        tasksComponent(user)
+      })
+    })
+
+
+
+  /* MANAGE TASK LIST ITEMS EVENT HANDLERS 
+  =========================================
+  ========================================= */
+
+  /* OnMark A Task Complete
+  ========================= */
+
+
+  /* OnClick Edit Notes Icon - (Open Accordian)
+  ============================================= */
+
+
+  /* OnChange DueDate
+  =================== */ 
+
+  /* OnChange DueDate
+  =================== */ 
+
+  /* OnDelete A Task
+  ==================== */
+  const deleteTaskListeners = document.querySelectorAll('.delete-task');  
+  deleteTaskListeners.forEach((listener) => {
+    listener.addEventListener('click', (e) => {
+      e.preventDefault();
+      const taskId = e.target.closest(".task-list-item").dataset.id;
+      deleteTask(taskId)
+        .then((response) => {
+          if(response.status === 200) {
+            tasksComponent(user) // rerender the component to refresh list 
+          }else {
+            throw new Error('Unable to delete task :(')
+          }
+        })
+        .catch((e) => {
+          console.log(e.message)
+        })
+    });
+  })
+
+  const deleteTask = (id) => {
+    user.tasks = user.tasks.filter((task) => {
+      return task._id != id
+    })
+    console.log('foreach tasks new tasks list ', user.tasks)
+    return serverComm(`/tasks/${id}`, 'DELETE');    
+  }
+
+
 } // End of TaskComponent 
+
+
 
 
 /* Sign Out  Click Event Listener 
@@ -271,6 +343,22 @@ const signOut = () => {
       console.log(e.message);
     })
 }
+
+
+/* PAGINATION - GET THE TASKS FOR PAGE REQUESTED 
+================================================= */
+const getPageTasks = (user) => {
+  const pageNumber = user.onPage; 
+  const tasksPerPage = user.preferences.tasksPerPage
+
+  const skip = (pageNumber - 1) * tasksPerPage;  // formula for implementing pagination - assuming 4 results per page hardcoded.
+
+  return user.tasks.slice(skip, skip + tasksPerPage)
+  
+}
+
+
+
 export {initialize as default, signOut}
 
 

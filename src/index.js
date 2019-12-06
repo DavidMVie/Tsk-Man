@@ -7,9 +7,8 @@ serverComm('/status', "GET", undefined)
   .then((jsonRes) => {
     return jsonRes.json()
   })
-  .then((response) => {
-    console.log('th rep ', response)
-    initialize(response)
+  .then((userObj) => { // User object, augmented with the users tasks array
+    initialize(userObj)
   })
   .catch((e) => {
     console.log(e.message);
