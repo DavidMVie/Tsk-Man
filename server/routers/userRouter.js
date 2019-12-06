@@ -11,7 +11,10 @@ const router = new express.Router();
 ============================================================================ */
 router.get('/status', auth, async (req, res) => {
   try {
-    await req.user.populate('tasks').execPopulate();
+    await req.user.populate({
+      path: 'tasks', // the name of the virtual
+      match: {completed: false}
+    }).execPopulate();
     // the user object when spread into the res.send was returning loads of mongoose/mongo extra bloat,  deleted by using toObject to convert to reg js obj,  and also deleted password and tokens as there's no good reason to send them down in the response.
     const user = req.user.toObject()
     delete user.password;
