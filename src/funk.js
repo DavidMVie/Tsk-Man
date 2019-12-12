@@ -165,7 +165,7 @@
   /* POST DATA USING FETCH API
   ============================== */
   const serverComm = (url = '', method = 'POST', headers = {'Content-Type':'application/json'},  data = {}) => {
-    if(method === "POST") {
+    if(method === "POST" || method === "PATCH") {
       return fetch(url, {
         method: method,
         headers: headers,

@@ -20,7 +20,12 @@ const taskSchema = new mongoose.Schema({
     type: Date
   },
   notes: [{
-    type: String
+    title: {
+      type: String
+    },
+    added: {
+      type: Date
+    }
   }],  
   changeHistory: [{
     desc: {
