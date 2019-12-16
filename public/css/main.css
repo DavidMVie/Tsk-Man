@@ -318,6 +318,11 @@ ul.errors-list li::before {
 
 }
 
+
+
+
+
+
 /* Task Tool Bar above the tasks,  holds icons for addig new tasks deleting all or organising existing tasks.*/
 
 div#task-tool-bar {
@@ -348,6 +353,39 @@ div#task-tool-bar i.fa-user-circle span.point-up{
   bottom: -150%;
 }
 
+/*Organising Tasks Modal*/
+
+#taskOrganiserContent {
+  padding: 10px
+}
+
+#taskOrganiserContent > div {
+  padding: 5px;
+  margin-top:15px
+}
+
+#taskOrganiserContent input {
+  text-indent: 3px
+}
+
+#taskOrganiserContent label{
+  display: inline-block;
+  margin-right: 5px;
+  margin-bottom: 5px;
+}
+
+#taskOrganiserContent select {
+  height: 25px;
+}
+
+
+/* Wipe Out All Tasks
+======================= */
+.delete-all.btn-yell {
+  margin-top: 20px;
+  padding: 8px 15px
+}
+
 /* THE TASK LIST  list-item
 ============================= */
 
@@ -356,7 +394,7 @@ section.task-list-wrapper {
   background: #F0F5F5;
   padding: 20px 0;
   border-radius: 15px;
-  min-height: 300px;  
+  min-height: 600px;  
   margin-bottom: 50px
 }
 
@@ -382,7 +420,13 @@ ul.task-list li.task-list-item {
 }
 
 ul.task-list li.task-list-item:not(:first-child) {
-  margin-top: 10px
+  margin-top: 10px;
+}
+
+ul.task-list li.task-list-item.completed {
+  background: #ADB1B2;
+  opacity: .6;
+  transform: scale(.9)
 }
 
 div.task-col-1 {
@@ -400,8 +444,8 @@ div.task-col-1 input[type="checkbox"] {
   height:14px;
   width: 14px;
   position: absolute;
-  left: -8px;
-  top: 1px
+  left: -1px;
+  cursor: pointer;
 }
 
 div.task-col-1 input#markComplete ~ span.tool-tip-box.point-down {
@@ -448,43 +492,118 @@ div.task-col-3 i {
   cursor: pointer;
 }
 
-span.delete-task {
+i.delete-task span{
   font-size: .7em !important;
 }
 
-
-
-
-/* 
-
-ul.task-list li.task-list-item .task-desc {
-  padding: 5px;
+div#changeDateWrapper {
+  margin-top: 3px
 }
 
-.change-due-date {
-  color: dodgerBlue;
+/*Changing the due Date */
+a#confirmChangeDueDate,
+a#cancelChangeDueDate {
+  margin-left: 3px
+}
+
+
+/* Edit Notes Accordian Element */
+li.notes-holder-li {
+  height: 0;
+  overflow: hidden;
+  width: 96%;
+  margin: 0 auto;
+  position: relative;
+  background: rgb(240, 240, 240);
+  list-style: none;
+  border-bottom: 1px solid rgb(201, 201, 201);
+  border-right: 1px solid rgb(201, 201, 201);
+  border-left: 1px solid rgb(201, 201, 201);
+  box-shadow: inset 0px 0px 8px rgba(0,0,0,.3)
+}
+
+li.notes-holder-li.open-note {
+  min-height: 250px;
+}
+
+
+li.notes-list-item {
+  position: relative;
+}
+
+.add-note-container {
+  position: absolute;
+  width: 100%;
+  min-height: 100px;
+  bottom: -55%;
+  left: 0;
+  transition: bottom .2s ease-in-out;
+  z-index: 2;
 
 }
 
-.change-due-date:hover {
-  color: rgb(14, 82, 150);
-  text-decoration: underline;
+.add-note-open {
+  bottom: 0%;
+  transition: bottom .4s ease
 }
 
-.change-due-date .fas.fa-check,
-.change-due-date .fas.fa-times {
-
+.add-note-container label {
+  font-size: 1em;
+  background: white;
+  padding: 10px; 
+  border-radius: 3px 3px 0 0;
+  cursor: pointer;
 }
 
-.change-due-date .fas.fa-check {
-  color: rgb(48, 185, 48);
-
+.add-note-container textarea {
+  width: 100%;
+  height: 100%;
+  min-height: 100px;
+  font-size: .9em;
+  border: none;
 }
 
-.change-due-date .fas.fa-times {
-  color: rgb(253, 80, 0);
+.add-note-container .btn-wrapper {
+  display: flex;
+  justify-content: space-around;
+}
 
-} */
+.add-note-container .btn-yell {
+  margin: 5px;
+  text-align: center;
+  padding: 5px 15px;
+  font-size: .7rem;
+}
+
+ul.notes-list {
+  padding: 10px 20px
+}
+
+
+ul.notes-list .note-added-date {
+  font-size: .7em;
+  font-style: italic;
+}
+
+ul.notes-list li.notes-list-item {
+  font-size: .9em;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgb(224, 224, 224);
+  list-style: none;
+}
+
+ul.notes-list li.notes-list-item a.remove-note {
+  font-size: .8em;
+}
+
+
+
+
+
+
+
+
+
 
 
 /* ==== FILTERING, SORTING, PAGINATION OF THE UL ==== 

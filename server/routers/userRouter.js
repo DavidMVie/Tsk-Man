@@ -1,5 +1,5 @@
 const express = require('express');
-const { check, validationResult } = require('express-validator');
+const { check, validationResult, sanitizeQuery } = require('express-validator');
 
 const auth = require('../middleware/auth');
 const User = require('../models/user');
@@ -9,16 +9,19 @@ const router = new express.Router();
 
 /* Check User Status - Part Of Page Initialization check to see if logged in
 ============================================================================ */
-router.get('/status', auth, async (req, res) => {
+router.get('/status',sanitizeQuery('completed').escape(), auth, async (req, res) => {
+  let completed = req.query.completed || false;
   try {
     await req.user.populate({
       path: 'tasks', // the name of the virtual
-      match: {completed: false}
+      match: {completed}
     }).execPopulate();
     // the user object when spread into the res.send was returning loads of mongoose/mongo extra bloat,  deleted by using toObject to convert to reg js obj,  and also deleted password and tokens as there's no good reason to send them down in the response.
     const user = req.user.toObject()
     delete user.password;
     delete user.tokens;
+    console.log('req.user.tasks', req.user.tasks)
+    console.log('user ', req.user)
     res.send({...user, tasks: req.user.tasks})
   } catch (e) {
     res.status(400).send({
@@ -72,10 +75,9 @@ router.post('/users', [
      const user = new User(req.body)
      // get the user a token 
      const token = await user.getAuthToken();
-     console.log(user)
      res.cookie('authToken', token, {httpOnly: true});
      await user.save();
-     res.status(201).send([])
+     res.redirect('/status')
    } catch (e) {
      res.status(400).send(e.message);
    }
@@ -103,7 +105,7 @@ router.get('/users/logout', auth, async (req, res) => {
 
 
 /* Log User In
-================== */
+=============== */
 router.post('/users/signin', [
   check('email')
     .isEmail()
@@ -132,12 +134,36 @@ router.post('/users/signin', [
       // Get the users tasks 
       await user.populate('tasks').execPopulate();
       const newUser = user.toObject()
-      delete newUser.password;
-      delete newUser.tokens;
-      res.send({...newUser, tasks: user.tasks})
+      res.redirect('/status')
     } catch (e) {
       res.status(401).json({errors: [{msg: 'Log in failed. Please check your details and try again..'}]});
     }
 });
+
+
+/* Setting User Preferences 
+=========================== */
+router.patch('/users/prefs',[
+  check('tasksPerPage')
+    .not().isEmpty()
+    .isNumeric()
+    .withMessage('Tasks Per Page must be a numeric value > 0 and < 20')
+    .isLength({min: 1, max: 20})
+    .withMessage('The minimum tasks per page is 1, the maximum allowed is 20')
+], auth, async(req, res) => {
+  const errors = validationResult(req);
+  if(!errors.isEmpty) {
+    return res.status(422).json({errors: errors.array()})
+  }
+  try {
+    console.log(req.user)
+    req.user.preferences.tasksPerPage = req.body.tasksPerPage;
+    await req.user.save()
+    res.send()
+  } catch (e) {
+    res.status(400).send(e.message);
+  }
+});
+
 
 module.exports = router;

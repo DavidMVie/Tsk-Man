@@ -165,7 +165,7 @@
   /* POST DATA USING FETCH API
   ============================== */
   const serverComm = (url = '', method = 'POST', headers = {'Content-Type':'application/json'},  data = {}) => {
-    if(method === "POST") {
+    if(method === "POST" || method === "PATCH") {
       return fetch(url, {
         method: method,
         headers: headers,
@@ -204,7 +204,6 @@
       toolTipBox.innerHTML = `
       <ul>
         <li><a href="#">Change Avatar</a></li>
-        <li><a href="#">Options</a></li>
         <li><a href="#" id="signOut">Sign Out</a></li>
       </ul>
     `

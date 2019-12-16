@@ -1,12 +1,12 @@
 const Task  = require('../models/task');
 const User  = require('../models/user');
+const moment = require('moment')
 
 const addTask = async (taskObj, user) => {
-
-  const notes = taskObj.notes === "" ? [] : taskObj.notes;  // set to empty array if nothing passed 
-  const dueDate = taskObj.dueDate === "" ? null : taskObj.dueDate
-
-  try {      
+  try {
+    const notes = taskObj.notes === "" ? [] : {title: taskObj.notes, added: moment().valueOf()}  // set to empty array if nothing passed 
+    const dueDate = taskObj.dueDate === "" ? null : taskObj.dueDate
+  
     const task = new Task({
       description: taskObj.description,
       dueDate,

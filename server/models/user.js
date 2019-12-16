@@ -37,6 +37,22 @@ const userSchema = new mongoose.Schema({
       required: true
     }
   }],
+  preferences: {
+    tasksPerPage: {
+      type: Number,
+      default: 8,
+      min: 1,
+      max: 20
+    },
+    sortBy: {
+      type: String,
+      default: "dueDate_Desc",
+    },
+    sortAsc: {
+      type: Boolean,
+      default: false  // by default sort by date in reverse chronological (desc)
+    }
+  },
   avatar: {
     type: Buffer
   }

@@ -3,9 +3,8 @@
       <section class="task-list-wrapper">
         <div class="select-filters">
           Showing <select class="select-css" name="showStatus" id="showStatus">
-            <option value="Incomplete">Incomplete</option>
-            <option value="Completed">Completed</option>
-            <option value="All">All</option>            
+            <option value="Incomplete" id="incomp">Incomplete</option>
+            <option value="Completed" id="comp">Completed</option>     
             </select>
         </div>
         <div id="links-bar"></div>
@@ -14,9 +13,8 @@
           {{#each this.tasks4Page}}
           <li class="task-list-item" data-id="{{_id}}">
             <div class="task-col-1">     
-              <label for="markComplete" class="tool-tip">
-                <input type="checkbox" id="markComplete">
-                <span class="tool-tip-box point-down">Mark Complete</span>
+              <label for="markComplete">
+                <input type="checkbox" id="markComplete" class="mark-complete" title="Mark Complete"> 
               </label>
               <i class="fas fa-sticky-note tool-tip edit-notes">
                 <span class="tool-tip-box point-up">Edit Notes</span>
@@ -40,10 +38,28 @@
               </div>
             </div>
             <div class="task-col-3">
-              <i class="fas fa-trash-alt tool-tip">
-                <span class="tool-tip-box point-down delete-task">Delete Task</span>
+              <i class="fas fa-trash-alt tool-tip delete-task">
+                <span class="tool-tip-box point-down">Delete Task</span>
               </i>            
             </div>
+          </li>
+          <li class="notes-holder-li">
+            <ul class="notes-list">
+              {{#each notes}}                
+              <li class="notes-list-item" data-id="{{_id}}">
+                <div class="note-added-date">Added: {{formatDate added 'dueDate'}}</div>
+                {{title}}
+                <a href="#" class="remove-note">...remove</a>
+              </li>
+              {{/each}}
+              <div class="add-note-container">
+                <label for="addNote">Add Note</label>
+                <textarea id="addNote"></textarea>
+                <div class="btn-wrapper">
+                  <button class="btn-yell btn-add-note">Add</button>
+                </div>                 
+              </div>
+             </ul>
           </li>
           {{/each}}
         {{else}}
