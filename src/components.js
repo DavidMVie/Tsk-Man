@@ -13,14 +13,18 @@ let moment = require('moment');
 import { serverComm, displayErrorOutput, validateForm, modal, centerEl, toggleCustomToolTip } from './funk';
 
 // On Page Load decided which view template should be rendered.
-const initialize = (response) => {
-  const content = document.getElementById('content');
-
-  if(response.loggedIn === false) {
-     return signInComponent() // give them the sign in template.
+const renderTasks = (user) => {
+  if(user.loggedIn === false) {
+     return signInComponent() // give the user the sign in template.
   }
+    // Sort the tasks if user has preference set
+    if(user.preferences.sortBy) {
+      let sortBy = user.preferences.sortBy.split('_');
+      let sortAsc = sortBy[1] === "Asc" ? true : false; // where Asc implies ascending order..
+      user.tasks.sort(sortTasks(sortBy[0], sortAsc))
+    } 
   // if logged in, give them their tasks
-  tasksComponent(response); 
+  tasksComponent(user); 
 }
 
 /* SIGN IN VIEW COMPONENT
@@ -55,16 +59,12 @@ const signInComponent = () => {
         return jsonResponse.json();
       })
       .then((data) => {
-        console.log('Check out this parsed jsw data ', data)
         if(data.errors) {
           return displayErrorOutput(data)
         }
-        console.log(data)
-        tasksComponent(data);
+        renderTasks(data);
       })
-      .catch((e) => {
-        console.log(e.message);
-      })
+      .catch((e) => console.log(e.message))
 
   })
 
@@ -79,7 +79,6 @@ const signInComponent = () => {
 ============================ */
 const signUpComponent = () => {
   content.innerHTML = signUpTemplate();
-
 
   // Form Submission Event Handler
   const form = document.querySelector('.signup-form');
@@ -109,10 +108,17 @@ const signUpComponent = () => {
           if(data.errors) {
             return displayErrorOutput(data)
           }
-            tasksComponent([]); // empty as new member - no existing tasks.
+          return data.json()
         })
-    } catch (e) {
-      console.log(e.message);
+        .then((user) => {
+          user.tasks = [] // just signed up so no tasks.
+          renderTasks(user); 
+        })
+        .catch((e) => {
+          throw new Error(e)
+        })
+    } catch(e) {
+      console.log(e.message)
     }
 
   })
@@ -130,13 +136,7 @@ const signUpComponent = () => {
 ====================================  */
 const tasksComponent = (user) => {
 
-  // Hard coded for now - this should be from db and attached to userObj returned on initial session start
-  const userPreferences = {  
-    tasksPerPage: 8
-  }
-  user.preferences = userPreferences;  // for now set this manually onthe userObj 
-
-
+ 
   // Dealing with pagination numbers to dislay, defaults to page 1 on initial page load
   if(!user.onPage) {
     user.onPage = 1;
@@ -144,12 +144,16 @@ const tasksComponent = (user) => {
 
   user.tasks4Page = getPageTasks(user); // function to paginate, get the tasks for page the user wants and add them to the user obj.
 
-  content.innerHTML = tasksTemplate(user);  // Template - Render the view with userObject as context
+  content.innerHTML = tasksTemplate(user);  // Template - Render the view with userObject as context - note it wil be task4Page array that is looped ove rin the template 
+  
+ 
+  // This property won't be set on initial paga load which defaults to showing incomplete tasks, but will be set each time thereafter that the user toggles the filter between completed and incomplete tasks using the select drop down
+  if(user.isShowing) {
+    const comp = document.querySelector('#comp');
+    const incomp = document.querySelector('#incomp')
+    user.isShowing === 'Completed' ? comp.selected = true : incomp.selected = true
+  }
 
-
-
-
-  console.log('YOUR SIRZ ' , user)
 
   /* INSERT & MANAGE THE TASK TOOLBAR
   ====================================    
@@ -159,15 +163,15 @@ const tasksComponent = (user) => {
   /* Task ToolBar Events 
   ======================= */
 
-  /* Onclick of Avatar Icon
+  /* Onclick of Avatar Image / Icon
   ======================================= */
   document.querySelector('#task-tool-bar .fa-user-circle').onclick = () => {
     toggleCustomToolTip(document.querySelector('#task-tool-bar .fa-user-circle'), 'userMenu', 'left')
   };
 
 
-  /* Onclick of Add Task Modal
-  ============================= */
+  /* Onclick of Add Task Modal Icon
+  ================================== */
   document.querySelector('#openAddTaskModal').addEventListener('click', (e) => {
    modal()
    document.querySelector('#modalContent').innerHTML = addTaskTemplate();
@@ -199,7 +203,7 @@ const tasksComponent = (user) => {
         e.target.elements.description.value = '';
         e.target.elements.dueDate.value = '';
         e.target.elements.notes.value = '';
-        tasksComponent(user)        
+        renderTasks(user)        
       })
       .catch((e) => {
         newTaskUL.innerHTML = `<li>${e.message}</li>`
@@ -218,9 +222,73 @@ const tasksComponent = (user) => {
     return serverComm('/tasks', 'POST', undefined, formObj);
   }
 
+  /* Onclick of Task Organiser Icon 
+  ================================= */
+  document.querySelector('#openTaskOrganiserModal').addEventListener('click', (e) => {
+    modal();
+    centerEl(document.querySelector('#modal'),{y: -10})
+    const contentDiv = document.querySelector('#modalContent');
+    const taskOrganiserContent = document.createElement('div');
+    taskOrganiserContent.id="taskOrganiserContent"
+    taskOrganiserContent.innerHTML = `
+      <h1>Task Organiser</h1>
+      <div>
+        <label for="tasksPerPage">Task Per Page</label>
+        <input type="number" min="1" max="20" id="tasksPerPage" value="${user.preferences.tasksPerPage}">
+      </div>
+      <div>
+        <label for="sortTasks">Sort Task Display </label>
+        <select id="sortTasks">
+          <option value="createdAt_Desc">By Date Added (Newest Top)</option>
+          <option value="createdAt_Asc">By Date Added (Oldest Top)</option>
+          <option value="dueDate_Asc">By Due Date (Soonest Top)</option>
+          <option value="description_Asc">Task Name (Alphabetical)</option>
+        </select>
+      </div>
+    `
+    contentDiv.appendChild(taskOrganiserContent)
 
-  /* Onclick Of Wipeout All Tasks
-  ================================ */
+    
+    document.querySelector(`option[value=${user.preferences.sortBy}]`).setAttribute('selected', true)
+    
+
+    // Event Handlers
+    // Change the tasksPerPage
+    document.querySelector('#tasksPerPage').addEventListener('change', (e) => {
+      const tasksPerPage = e.target.value * 1 // convert string to number
+      if(tasksPerPage < 1 || tasksPerPage > 20) {
+        return  // build this into an error message to tell the user. 
+      }
+           
+      user.preferences.tasksPerPage = tasksPerPage;
+      tasksComponent(user)
+      // Update the Server
+      serverComm(`/users/prefs`, "PATCH", undefined, {tasksPerPage})
+        .then((jsonRes) => {
+          if(jsonRes.status !== 200) {
+            throw new Error('Unable to change Tasks Per Page setting..')
+          }
+        })
+        .catch((e) => console.log(e.message));
+    })
+
+    /* Sort The Tasks */
+    document.querySelector('#sortTasks').addEventListener('change', (e) => {
+     const options = e.target.querySelectorAll('option');
+     options.forEach((option) => {
+       if(option.hasAttribute('selected')) {
+         option.removeAttribute('selected')
+       }
+     })
+     document.querySelector(`option[value=${e.target.value}]`).setAttribute('selected', 'true')
+
+      user.preferences.sortBy = e.target.value;
+      renderTasks(user) // render tasks wil perform the sort 
+    })
+  })
+
+  /* Onclick Of Wipeout All Tasks Icon
+  ===================================== */
   document.querySelector('#wipeTasks').addEventListener('click', (e) => {
     e.preventDefault();
     modal({y: 10})
@@ -228,7 +296,6 @@ const tasksComponent = (user) => {
 
     document.querySelector('.delete-all').addEventListener('click', (e) => {
       e.preventDefault();
-      console.log(document.querySelector('#wipeout').value)
       if(document.querySelector('#wipeout').value === 'wipeout' ) {
         user.tasks = [];
         serverComm('/tasks/all', 'DELETE')
@@ -239,18 +306,38 @@ const tasksComponent = (user) => {
            throw new Error('An error occurred, please try again later.')
          })
          .then((msg) => {
-           console.log(msg)
            document.querySelector('#modal').remove();
            document.querySelector('#overlay').remove();
            tasksComponent(user);  // Re-render the empty tasks component 
          })
-         .catch((e) => {
-           console.log(e.message);
-         })
+         .catch((e) => console.log(e.message))
       }
     })
 
   })
+
+
+  /*
+    FILTERING TO SHOW INCOMPLETE (DEFAULT) / COMPLETE TASKS 
+  */
+ document.querySelector('#showStatus').addEventListener('change', (e) => {
+   e.preventDefault(); 
+   let type = e.target.value === 'Completed' ? true : false;
+   serverComm(`/status?completed=${type}`, "GET")
+    .then((jsonRes) => {
+      if(!jsonRes.status === 200) {
+        throw new Error('Unable to filter tasks')
+      }
+      return jsonRes.json();
+    })
+    .then((res) => {
+      res.isShowing = e.target.value  // Add to the user object a property to tell which filter option to set as default
+      renderTasks(res)
+    })
+    .catch((e) => {
+      console.log(e.message)
+    })
+ })
 
 
   /* INSERT PAGINATION BAR 
@@ -286,28 +373,34 @@ const tasksComponent = (user) => {
 
     const taskId = li.dataset.id
 
-    // Find the list-items associated Task
-    // const task = user.tasks.find((task) => task._id === taskId);
-    // if(!task) {
-    //   throw new Error('no task exists for this list-item?')
-    // }
+    // Find the users task associated with this DOM List Item
+    const task = user.tasks.find((task) => task._id === taskId);
+    if(!task) {
+      throw new Error('no task exists for this list-item?')
+    }
+
+    if(task.completed) {
+      toggleMarkCompletedStyle(true, li)
+    }
 
     // check the content to see if any need marked as complete already
     
 
     /* OnMark Complete
     =================== */
-    li.querySelector('#markComplete').addEventListener('change', (e) => {
+    li.querySelector('.mark-complete').addEventListener('change', (e) => {
       e.preventDefault();
       let completed = false
       if(e.target.checked) {
         completed = true;
         toggleMarkCompletedStyle(true, li);
         toggleMarkCompletedArray(true, li, user);
+        renderTasks(user)
 
       }else {
         toggleMarkCompletedStyle(false, li);
         toggleMarkCompletedArray(false, li, user);
+        renderTasks(user)
       }
 
       // update the server 
@@ -368,7 +461,6 @@ const tasksComponent = (user) => {
           })
 
         // update client side in the users tasksArray
-        console.log('our sir nutz ', user)
         let task = user.tasks.find((task) => task._id === id)
         if(!task) {
           throw new Error('No task exists with that Id?')
@@ -379,7 +471,57 @@ const tasksComponent = (user) => {
 
     /* OnChange Due Date */
     li.querySelector('.change-due-date').addEventListener('click', (e) => {
-      console.log('change due date clicked')
+      e.preventDefault();
+      // first, close any other open ones 
+      if(document.querySelector('input#changeDueDate')) {
+        const targetEl = document.querySelector('input#changeDueDate').closest('li')
+        targetEl.querySelector('input#changeDueDate').remove();
+        targetEl.querySelector('#confirmChangeDueDate').remove();
+        targetEl.querySelector('#cancelChangeDueDate').remove();
+        targetEl.querySelector('.change-due-date').style.display = "inline"
+      }
+      const parent = li.querySelector('.due-date');
+      const changeDueDateLink = e.target;
+      const changeDateWrapper = document.createElement('div')
+      changeDateWrapper.id = "changeDateWrapper"
+      changeDateWrapper.innerHTML = `
+        <input type="date" id="changeDueDate"> 
+        <a href="#" id="confirmChangeDueDate">Confirm</a>
+        <a href="#" id="cancelChangeDueDate">Cancel</a>
+      `
+      parent.insertBefore(changeDateWrapper, changeDueDateLink )
+      changeDueDateLink.style.display = "none"
+      changeDateWrapper.querySelector('#confirmChangeDueDate').addEventListener("click", (e) => {
+        const dateInput = changeDateWrapper.querySelector('#changeDueDate')
+        e.preventDefault();
+        if(dateInput.value !== ""){
+          // update the users array
+
+          serverComm(`/tasks/${li.dataset.id}/changeDueDate`, "PATCH", undefined, {date: dateInput.value})
+            .then((jsonRes) => {
+              if(!jsonRes.status === 200) {
+                throw new Error('Error, unable to change date')
+              }
+              return jsonRes.json();
+            })
+            .then((res) => {
+              const taskIndex = user.tasks.findIndex((task) => task._id === res._id)
+              if(taskIndex == -1) {
+                throw new Error('No task exists with that Id')
+              }
+              user.tasks.splice(taskIndex, 1, res)
+              renderTasks(user)        
+            })
+            .catch((e) => {
+              console.log(e.message)
+            })
+        }
+      })
+      changeDateWrapper.querySelector('#cancelChangeDueDate').addEventListener('click', (e) => {
+        e.preventDefault();
+        changeDateWrapper.remove();
+        changeDueDateLink.style.display = "inline"
+      })
     })
 
     /* OnDelete A Task
@@ -390,7 +532,7 @@ const tasksComponent = (user) => {
       deleteTask(taskId)
         .then((response) => {
           if(response.status === 200) {
-            tasksComponent(user) // rerender the component to refresh list 
+            renderTasks(user) // rerender the component to refresh list 
           }else {
             throw new Error('Unable to delete task :(')
           }
@@ -422,7 +564,7 @@ const tasksComponent = (user) => {
       removeLink.addEventListener('click', (e) => {
         e.preventDefault();
         const domNoteLi = removeLink.closest('li')
-        manageNote('delete', {domNoteLi, domTaskLi: li}, user)
+        manageNote('delete', {domNoteLi, domTaskLi: li}, user);
 
 
       })
@@ -435,7 +577,6 @@ const tasksComponent = (user) => {
     user.tasks = user.tasks.filter((task) => {
       return task._id != id
     })
-    console.log('foreach tasks new tasks list ', user.tasks)
     return serverComm(`/tasks/${id}`, 'DELETE');    
   }
 
@@ -480,14 +621,13 @@ const manageNote = (action, noteObj, user) => {
         // set the data-id attr
         noteLi.setAttribute('data-id', resObj.note_id);
         // update the users tasks array:
-        console.log('what is that response ', resObj)
+
         spliceTaskArray(user, 'add', {newTaskObj: resObj.task})
         // Add the Event Handler for the remove button on the newly added note
         noteLi.querySelector('.remove-note').addEventListener('click', (e) => {
           e.preventDefault();
   
           const domTaskLi = noteLi.closest('li.notes-holder-li').previousElementSibling
-          console.log('tom ask li ', domTaskLi)
           manageNote('delete', {domNoteLi: noteLi, domTaskLi}, user)
         })
       })
@@ -498,7 +638,6 @@ const manageNote = (action, noteObj, user) => {
   }
 
   if(action === 'delete') {
-    // console.log('what is the domtaskli ', domTaskLi)
     const taskId = noteObj.domTaskLi.dataset.id;
     const noteId = noteObj.domNoteLi.dataset.id; 
   
@@ -508,9 +647,6 @@ const manageNote = (action, noteObj, user) => {
           return jsonRes.json()
         }
         throw new Error('Error Deleting Note');
-      })
-      .then((response) => {
-        console.log('The Response', response);
       })
       .catch((e) => {
         console.log(e.message)
@@ -546,7 +682,6 @@ const spliceTaskArray = (user, action, configObj) => {
       throw new Error('Unable to find Task with that Id')
     }
     user.tasks.splice(taskIndex, 1, configObj.newTaskObj)
-    console.log('add note user ', user)
     break;
     case "delete" : 
     const task = user.tasks.find((task) => task._id === configObj.taskId);
@@ -569,7 +704,10 @@ const spliceTaskArray = (user, action, configObj) => {
 */
 const toggleMarkCompletedStyle = (completed, li) => {
     const taskDesc = li.querySelector('.task-desc');
+    const cb = li.querySelector('#markComplete');
     if(completed){
+      // make sure cb is checked (template re-render refrsh wipes this)
+      cb.checked = true
       // If the notes box is open close it first
       if(li.nextElementSibling.classList.contains('open-note')) {
         li.nextElementSibling.classList.remove('open-note')
@@ -579,6 +717,7 @@ const toggleMarkCompletedStyle = (completed, li) => {
       taskDesc.style.textDecoration="line-through";
       li.querySelector('.edit-notes').style.display = "none";
     }else {
+      cb.checked = false;
       li.classList.remove('completed');
       taskDesc.setAttribute('contentEditable', 'true');
       taskDesc.style.textDecoration="none";
@@ -588,20 +727,19 @@ const toggleMarkCompletedStyle = (completed, li) => {
 
 
 const toggleMarkCompletedArray = (completed, li, user) => {
-  if(completed) {
-    const taskId = li.dataset.id;
-    const taskIndex = user.tasks.findIndex( (task) => taskId === task._id)
-  
-    if(taskIndex === -1) {
-      throw new Error('No task exists with that Id')
-    }
-    const task = user.tasks[taskIndex]
+  const taskId = li.dataset.id;
+  const taskIndex = user.tasks.findIndex( (task) => taskId === task._id)
+
+  if(taskIndex === -1) {
+    throw new Error('No task exists with that Id')
+  }
+  const task = user.tasks[taskIndex]
+  if(completed) {    
     task.completed = true;       
     user.tasks.splice(taskIndex, 1);
-    user.tasks.push(task) // add it to the end of the array now
-    console.log('tasks to end of tasks ', user)
+    user.tasks.push(task) 
   }else {
-    // to be completed.
+    task.completed = false
   }
 }
 
@@ -613,12 +751,9 @@ const signOut = () => {
       return jsonResponse.json();
     })
     .then((data) => {
-      console.log(data);
       signInComponent();
     })
-    .catch((e) => {
-      console.log(e.message);
-    })
+    .catch((e) => console.log(e.message))
 }
 
 
@@ -631,11 +766,33 @@ const getPageTasks = (user) => {
   const skip = (pageNumber - 1) * tasksPerPage;  // formula for implementing pagination
 
   return user.tasks.slice(skip, skip + tasksPerPage)
-  
+  d
 }
 
+/* Sorting Tasks */
+const sortTasks = (sortBy, ascending) => {
+  return (a, b) => {
+    if(a[sortBy] === b[sortBy]) {
+      return 0
+    }
+    // nulls should be after anything else
+    else if(a[sortBy] === null) {
+      return 1;
+    }
+    else if(b[sortBy] === null) {
+      return -1;
+    }
+    // otherwise if ascending, lowest sorts first
+    else if(ascending) {
+      return a[sortBy] < b[sortBy] ? -1 : 1
+    }
+    else {
+      // if desc, highest sorts first
+      return a[sortBy] < b[sortBy] ? 1 : -1
+    }
+  }
+}
 
-
-export {initialize as default, signOut}
+export {renderTasks as default, signOut}
 
 

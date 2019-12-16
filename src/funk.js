@@ -204,7 +204,6 @@
       toolTipBox.innerHTML = `
       <ul>
         <li><a href="#">Change Avatar</a></li>
-        <li><a href="#">Options</a></li>
         <li><a href="#" id="signOut">Sign Out</a></li>
       </ul>
     `

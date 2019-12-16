@@ -63,7 +63,7 @@ router.delete('/tasks/:id', sanitizeParam('id').escape(), auth, async (req, res)
   }
 })
 
-/* Change Tasks Title
+/* Change Task Title
 ====================== */
 router.patch('/tasks/:id', [
   check('change')
@@ -91,6 +91,36 @@ router.patch('/tasks/:id', [
   await task.save();
   res.send(task)
 })
+
+/* Change Task Due Date
+======================== */
+router.patch('/tasks/:id/changeDueDate', [
+  check('date')
+  .not().isEmpty()
+  .withMessage('Date is required')
+  .toDate()
+], sanitizeParam('id').escape(), auth, async(req, res) => {
+  const errors = validationResult(req);
+  if(!errors.isEmpty()) {
+    return res.status(422).json({errors: errors.array()});
+  }
+  console.log('req.params ', req.params);
+  console.log('req.body ', req.body)
+
+  // get te task 
+  try {
+    const task = await Task.findOne({_id: req.params.id, owner: req.user._id})
+    if(!task) {
+      throw new Error('Unable to find task')
+    }
+    task.dueDate = req.body.date;
+    await task.save();
+    res.send(task)
+  } catch (e) {
+    res.status(400).send(e.message);
+  }
+})
+
 
 
 /* Add New Note To Existing Task 
