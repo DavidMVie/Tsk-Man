@@ -386,9 +386,10 @@ div#task-tool-bar i.fa-user-circle span.point-up{
   padding: 8px 15px
 }
 
+
+
 /* THE TASK LIST  list-item
 ============================= */
-
 
 section.task-list-wrapper {
   background: #F0F5F5;
@@ -398,19 +399,27 @@ section.task-list-wrapper {
   margin-bottom: 50px
 }
 
-ul.task-list {
+ul#task-list {
   display: flex;
   flex-direction: column;
   margin: 0 auto;
   padding: 0;
   width: 90%; 
-
-
 }
 
-ul.task-list li.task-list-item {
+
+ul#task-list li.task-list-item {
   box-shadow: 1px 1px 15px rgba(0,0,0,.3);
   border-radius: 5px;
+  list-style: none;
+  display: flex;
+  position: relative;
+  flex-direction: column;
+}
+
+ul#task-list li.task-list-item div.task-wrapper{
+  box-shadow: 1px 1px 15px rgba(0,0,0,.3);
+  border-radius: 5px 5px 0 0;
   min-height: 40px;
   padding: 5px 8px;
   list-style: none;
@@ -419,11 +428,12 @@ ul.task-list li.task-list-item {
   position: relative;
 }
 
-ul.task-list li.task-list-item:not(:first-child) {
+ul#task-list li.task-list-item:not(:first-child) {
   margin-top: 10px;
 }
 
-ul.task-list li.task-list-item.completed {
+
+ul#task-list li.task-list-item.completed {
   background: #ADB1B2;
   opacity: .6;
   transform: scale(.9)
@@ -500,6 +510,7 @@ div#changeDateWrapper {
   margin-top: 3px
 }
 
+
 /*Changing the due Date */
 a#confirmChangeDueDate,
 a#cancelChangeDueDate {
@@ -507,9 +518,8 @@ a#cancelChangeDueDate {
 }
 
 
-/* Edit Notes Accordian Element */
-li.notes-holder-li {
-  height: 0;
+div.notes-wrapper {
+  height: 0; 
   overflow: hidden;
   width: 96%;
   margin: 0 auto;
@@ -522,13 +532,14 @@ li.notes-holder-li {
   box-shadow: inset 0px 0px 8px rgba(0,0,0,.3)
 }
 
-li.notes-holder-li.open-note {
+
+div.notes-wrapper.open-note {
   min-height: 250px;
 }
 
 
 li.notes-list-item {
-  position: relative;
+  position: relative;  /* To facility add-note-container as absolute*/
 }
 
 .add-note-container {
@@ -546,6 +557,7 @@ li.notes-list-item {
   bottom: 0%;
   transition: bottom .4s ease
 }
+
 
 .add-note-container label {
   font-size: 1em;
@@ -595,11 +607,6 @@ ul.notes-list li.notes-list-item {
 ul.notes-list li.notes-list-item a.remove-note {
   font-size: .8em;
 }
-
-
-
-
-
 
 
 

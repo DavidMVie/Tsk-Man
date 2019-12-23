@@ -46,12 +46,11 @@ const userSchema = new mongoose.Schema({
     },
     sortBy: {
       type: String,
-      default: "dueDate_Desc",
+      default: "dueDate_Desc"
     },
-    sortAsc: {
-      type: Boolean,
-      default: false  // by default sort by date in reverse chronological (desc)
-    }
+    customSort: [{
+      type: mongoose.Schema.Types.ObjectId
+    }]
   },
   avatar: {
     type: Buffer

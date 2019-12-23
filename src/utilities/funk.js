@@ -1,4 +1,4 @@
-  import {signOut} from './components'
+  import {signOut} from '../components/task-bar/userOptionsComponent'
   
   /* MODAL BOX 
   ====================

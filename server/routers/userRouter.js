@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose')
 const { check, validationResult, sanitizeQuery } = require('express-validator');
 
 const auth = require('../middleware/auth');
@@ -20,9 +21,15 @@ router.get('/status',sanitizeQuery('completed').escape(), auth, async (req, res)
     const user = req.user.toObject()
     delete user.password;
     delete user.tokens;
-    console.log('req.user.tasks', req.user.tasks)
-    console.log('user ', req.user)
-    res.send({...user, tasks: req.user.tasks})
+    if(user.preferences.sortBy === "custom_Desc") {
+      if(user.preferences.customSort.length === 0 && req.user.tasks.length > 0) {
+        let customSort = req.user.tasks.map((task) => {
+         return task._id
+       })
+       user.preferences.customSort = customSort;
+      }    
+    }
+    res.send({...user, "tasks": req.user.tasks})
   } catch (e) {
     res.status(400).send({
       loggedIn: false,
@@ -131,9 +138,9 @@ router.post('/users/signin', [
       // add the token to their array
       await user.save();
       res.cookie('authToken', token, {httpOnly: true})
-      // Get the users tasks 
-      await user.populate('tasks').execPopulate();
-      const newUser = user.toObject()
+      // // Get the users tasks
+      // await user.populate('tasks').execPopulate();
+      // const newUser = user.toObject()
       res.redirect('/status')
     } catch (e) {
       res.status(401).json({errors: [{msg: 'Log in failed. Please check your details and try again..'}]});
@@ -141,8 +148,8 @@ router.post('/users/signin', [
 });
 
 
-/* Setting User Preferences 
-=========================== */
+/* Setting User Tasks Per Page Preferences 
+=========================================== */
 router.patch('/users/prefs',[
   check('tasksPerPage')
     .not().isEmpty()
@@ -156,7 +163,6 @@ router.patch('/users/prefs',[
     return res.status(422).json({errors: errors.array()})
   }
   try {
-    console.log(req.user)
     req.user.preferences.tasksPerPage = req.body.tasksPerPage;
     await req.user.save()
     res.send()
@@ -166,4 +172,66 @@ router.patch('/users/prefs',[
 });
 
 
+/* Setting User SortBy Tasks Preferences 
+========================================= */
+router.patch('/users/sortTasks', [
+  check('sortBy')
+    .not().isEmpty()
+    .withMessage('Required field sortBy')
+    .trim()
+    .escape()
+], auth, async(req, res) => {
+  const errors = validationResult(req);
+  if(!errors.isEmpty()) {
+    return res.status(422).json({errors: errors.array()})
+  }
+  // Limit what can be passed into this: 
+  const allowedUpdates = ['custom_Desc', 'createdAt_Desc', 'createdAt_Asc', 'dueDate_Asc', 'description_Asc']
+  const sortBy = allowedUpdates.find((allowedUpdate) => {
+    return allowedUpdate === req.body.sortBy
+  })
+  if(!sortBy) {
+    return res.status(400).json({errors: [{msg: 'Update value is not allowed'}]});
+  }
+  req.user.preferences.sortBy = sortBy
+  await req.user.save();
+  res.send();
+});
+
+/* Changing the Custom Sort Array Map */
+router.patch('/users/customSort',[
+  check('customSort')
+  .isArray()
+  .withMessage('Not a valid collection')
+  .custom((value) => {
+    const areAllValid = value.every((el) => {
+      return mongoose.Types.ObjectId.isValid(el)
+    })
+
+    if(!areAllValid) {
+      throw new Error('Not all valid id\'s')
+    }
+    return areAllValid;
+  })
+
+], auth, async (req, res) => {
+  const errors = validationResult(req);
+  if(!errors.isEmpty()) {
+    return res.status(422).json({errors: errors.array()})
+  }
+  console.log('sort user ', req.user)
+  try {
+    console.log(req.user.preferences.customSort)
+    console.log(req.body)
+    req.user.preferences.customSort = req.body.customSort;
+    await req.user.save();
+    res.send()   
+  } catch (e) {
+    console.log(e.message)
+    res.status(400).send(e.message)
+  }
+
+});
+
+  
 module.exports = router;

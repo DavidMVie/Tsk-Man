@@ -14,7 +14,11 @@ const addTask = async (taskObj, user) => {
       owner: user._id
     });
 
+    console.log('the user ', user)
+    console.log('The Task ', task)
+    user.preferences.customSort.push(task._id);
     await task.save();
+    await user.save();
     return task;
 
   } catch (e) {

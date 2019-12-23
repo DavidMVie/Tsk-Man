@@ -45,6 +45,8 @@ router.post('/tasks', [
 router.delete('/tasks/all', auth, async(req, res) => {
   try {
      await Task.deleteMany({owner: req.user._id});
+     req.user.preferences.customSort = [];
+     await req.user.save();
      res.send({msg: 'All Tasks Deleted!'})
   } catch (e) {
     res.status(400).send(e.message)
@@ -121,6 +123,11 @@ router.patch('/tasks/:id/changeDueDate', [
   }
 })
 
+
+
+/* NOTE RELATED
+=================
+================= */
 
 
 /* Add New Note To Existing Task 
