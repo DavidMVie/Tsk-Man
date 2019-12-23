@@ -1,0 +1,15 @@
+      <h1>Task Organiser</h1>
+      <div>
+        <label for="tasksPerPage">Task Per Page</label>
+        <input type="number" min="1" max="20" id="tasksPerPage" value="{{this.preferences.tasksPerPage}}">
+      </div>
+      <div>
+        <label for="sortTasks">Sort Task Display </label>
+        <select id="sortTasks">
+          <option value="custom_Desc">Manually Sort (drag and drop)</option>
+          <option value="createdAt_Desc">By Date Added (Newest Top)</option>
+          <option value="createdAt_Asc">By Date Added (Oldest Top)</option>
+          <option value="dueDate_Asc">By Due Date (Soonest Top)</option>
+          <option value="description_Asc">Task Name (Alphabetical)</option>
+        </select>
+      </div>

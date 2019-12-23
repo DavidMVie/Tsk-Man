@@ -1,0 +1,71 @@
+      <section class="task-list-wrapper">
+        <div class="select-filters">
+          Showing <select class="select-css" name="showStatus" id="showStatus">
+            <option value="Incomplete" id="incomp">Incomplete</option>
+            <option value="Completed" id="comp">Completed</option>     
+            </select>
+        </div>
+        <div id="links-bar"></div>
+        {{#if this.tasks4Page}}
+        <ul id="task-list">
+          {{#each this.tasks4Page}}
+          <li class="task-list-item" data-id="{{_id}}">
+            <div class="task-wrapper">
+              <div class="task-col-1">     
+                <label for="markComplete">
+                  <input type="checkbox" id="markComplete" class="mark-complete" title="Mark Complete"> 
+                </label>
+                <i class="fas fa-sticky-note tool-tip edit-notes">
+                  <span class="tool-tip-box point-up">Edit Notes</span>
+                </i>
+              </div>
+              <div class="task-col-2">
+                <div class="task-desc" contenteditable="true">
+                {{description}}
+                </div>
+                <div class="task-lower-half tiny-text">
+                  <span class="due-date">
+                    {{#if dueDate}}
+                      Due: {{formatDate dueDate 'dueDate'}}
+                      <span> <strong> ({{formatDate dueDate 'timeTo'}}) </strong></span>                   
+                    {{else}}
+                      No due date set..
+                    {{/if}}
+                    <a href="#" class="change-due-date">(Change)</a>
+                  </span>
+
+                </div>
+              </div>
+              <div class="task-col-3">
+                <i class="fas fa-trash-alt tool-tip delete-task">
+                  <span class="tool-tip-box point-down">Delete Task</span>
+                </i>            
+              </div>
+            </div>
+            <div class="notes-wrapper">
+              <ul class="notes-list">
+                {{#each notes}}                
+                <li class="notes-list-item" data-id="{{_id}}">
+                  <div class="note-added-date">Added: {{formatDate added 'dueDate'}}</div>
+                  {{title}}
+                  <a href="#" class="remove-note">...remove</a>
+                </li>
+                {{/each}}
+                <div class="add-note-container">
+                  <label for="addNote">Add Note</label>
+                  <textarea id="addNote"></textarea>
+                  <div class="btn-wrapper">
+                    <button class="btn-yell btn-add-note">Add</button>
+                  </div>                 
+                </div>
+              </ul>
+            </div>
+          </li>
+          {{/each}}
+        {{else}}
+          <p class="no-tasks">You don't have any Tasks yet!</p>
+        {{/if}}
+        </ul>
+      </section>
+
+
