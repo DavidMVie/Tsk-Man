@@ -7,6 +7,7 @@ const paginationTemplate = require('../../templates/paginationTemplate.hbs');
 let moment = require('moment');
 import { serverComm } from '../../utilities/funk'
 import Sortable from 'sortablejs'
+import { getPageTasks } from '../pagination/paginationComponent';
 
 
 // On Page Load decided which view template should be rendered.
@@ -77,17 +78,7 @@ const tasksComponent = (user) => {
 
 
 
-/* PAGINATION - GET THE TASKS FOR PAGE REQUESTED 
-================================================= */
-const getPageTasks = (user) => {
-  console.log('page tasks user ', user)
-  const pageNumber = user.onPage;
-  const tasksPerPage = user.preferences.tasksPerPage;
 
-  const skip = (pageNumber - 1) * tasksPerPage;  // formula for implementing pagination
-
-  return user.tasks.slice(skip, skip + tasksPerPage)
-}
 
 
 
