@@ -13,7 +13,7 @@
   "license": "ISC",
   "devDependencies": {
     "env-cmd": "^10.0.1",
-    "handlebars": "^4.5.3",
+    "handlebars": "^4.7.7",
     "handlebars-loader": "^1.7.1",
     "moment-locales-webpack-plugin": "^1.1.2",
     "nodemon": "^2.0.1",
